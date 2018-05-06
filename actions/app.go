@@ -46,6 +46,9 @@ func App() *buffalo.App {
 		//  c.Value("tx").(*pop.PopTransaction)
 		// Remove to disable this.
 		app.Use(middleware.PopTransaction(models.DB))
+		app.Use(Authenticate)
+
+		app.Middleware.Skip(Authenticate, LoginHandler)
 
 		app.GET("/", AuthenticateForTwilio(HomeHandler))
 		app.POST("/login", LoginHandler)
