@@ -12,3 +12,4 @@ textcampaign
 .vscode/
 .grifter/
 .env
+config/jwt_sign_key

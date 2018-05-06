@@ -1,0 +1,10 @@
+create_table("users", func(t) {
+	t.Column("id", "uuid", {"primary": true})
+	t.Column("user_name", "string", {})
+	t.Column("first_name", "string", {"default": ""})
+  t.Column("last_name", "string", {"default": ""})
+  t.Column("phone_no", "string", {"default": ""})
+	t.Column("password", "string", {})
+})
+
+add_index("users", "user_name", {"unique": true})

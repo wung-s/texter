@@ -48,7 +48,9 @@ func App() *buffalo.App {
 		app.Use(middleware.PopTransaction(models.DB))
 
 		app.GET("/", AuthenticateForTwilio(HomeHandler))
+		app.POST("/login", LoginHandler)
 		app.POST("/messages", FormURLEncodedHeader(AuthenticateForTwilio(MessagesCreate)))
+		app.POST("/users", UsersCreate)
 	}
 
 	return app

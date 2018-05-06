@@ -71,11 +71,37 @@ CREATE TABLE schema_migration (
 ALTER TABLE schema_migration OWNER TO postgres;
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE users (
+    id uuid NOT NULL,
+    user_name character varying(255) NOT NULL,
+    first_name character varying(255) DEFAULT ''::character varying NOT NULL,
+    last_name character varying(255) DEFAULT ''::character varying NOT NULL,
+    phone_no character varying(255) DEFAULT ''::character varying NOT NULL,
+    password character varying(255) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE users OWNER TO postgres;
+
+--
 -- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY messages
     ADD CONSTRAINT messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
@@ -90,6 +116,13 @@ CREATE INDEX messages_reciever_no_idx ON messages USING btree (reciever_no);
 --
 
 CREATE INDEX messages_sender_no_idx ON messages USING btree (sender_no);
+
+
+--
+-- Name: users_user_name_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX users_user_name_idx ON users USING btree (user_name);
 
 
 --
