@@ -1,0 +1,3 @@
+drop_index("messages", "messages_reciever_no_idx")
+drop_index("messages", "messages_sender_no_idx")
+drop_table("messages")

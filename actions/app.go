@@ -38,7 +38,6 @@ func App() *buffalo.App {
 
 		// Set the request content type to JSON
 		app.Use(middleware.SetContentType("application/json"))
-
 		if ENV == "development" {
 			app.Use(middleware.ParameterLogger)
 		}
@@ -48,8 +47,8 @@ func App() *buffalo.App {
 		// Remove to disable this.
 		app.Use(middleware.PopTransaction(models.DB))
 
-		app.GET("/", HomeHandler)
-
+		app.GET("/", AuthenticateForTwilio(HomeHandler))
+		app.POST("/messages", FormURLEncodedHeader(AuthenticateForTwilio(MessagesCreate)))
 	}
 
 	return app

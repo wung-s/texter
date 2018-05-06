@@ -1,0 +1,18 @@
+create_table("messages", func(t) {
+	t.Column("id", "uuid", {"primary": true})
+	t.Column("body", "text", {"default": ""})
+	t.Column("account_sid", "string", {"default": ""})
+	t.Column("message_sid", "string", {"default": ""})
+	t.Column("messaging_service_sid", "string", {"default": ""})
+	t.Column("sms_message_sid", "string", {"default": ""})
+	t.Column("sms_sid", "string", {"default": ""})
+	t.Column("reciever_no", "string", {})
+	t.Column("sender_no", "string", {})
+	t.Column("sender_city", "string", {})
+	t.Column("sender_country", "string", {})
+	t.Column("sender_state", "string", {})
+	t.Column("sender_zip", "string", {})
+})
+
+add_index("messages", "reciever_no", {})
+add_index("messages", "sender_no", {})
