@@ -35,6 +35,21 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: conversations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE conversations (
+    id uuid NOT NULL,
+    status character varying(255) DEFAULT 'pending'::character varying NOT NULL,
+    user_id uuid,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE conversations OWNER TO postgres;
+
+--
 -- Name: messages; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -53,7 +68,8 @@ CREATE TABLE messages (
     sender_state character varying(255) NOT NULL,
     sender_zip character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    conversation_id uuid NOT NULL
 );
 
 
@@ -89,6 +105,14 @@ CREATE TABLE users (
 ALTER TABLE users OWNER TO postgres;
 
 --
+-- Name: conversations conversations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY conversations
+    ADD CONSTRAINT conversations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -102,6 +126,20 @@ ALTER TABLE ONLY messages
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: conversations_status_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX conversations_status_idx ON conversations USING btree (status);
+
+
+--
+-- Name: conversations_user_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX conversations_user_id_idx ON conversations USING btree (user_id);
 
 
 --
@@ -130,6 +168,22 @@ CREATE UNIQUE INDEX users_user_name_idx ON users USING btree (user_name);
 --
 
 CREATE UNIQUE INDEX version_idx ON schema_migration USING btree (version);
+
+
+--
+-- Name: conversations conversations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY conversations
+    ADD CONSTRAINT conversations_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: messages messages_conversations_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY messages
+    ADD CONSTRAINT messages_conversations_id_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE;
 
 
 --

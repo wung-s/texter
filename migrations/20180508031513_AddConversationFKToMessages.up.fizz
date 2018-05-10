@@ -1,0 +1,4 @@
+add_column("messages", "conversation_id", "uuid", {})
+add_foreign_key("messages", "conversation_id", {"conversations": ["id"]}, {
+    "on_delete": "cascade"
+})

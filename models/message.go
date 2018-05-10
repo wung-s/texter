@@ -8,7 +8,6 @@ import (
 	"github.com/gobuffalo/pop/nulls"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
-	"github.com/gobuffalo/validate/validators"
 )
 
 type Message struct {
@@ -27,6 +26,7 @@ type Message struct {
 	FromCountry         string       `json:"from_country" db:"sender_country"`
 	FromState           string       `json:"from_state" db:"sender_state"`
 	FromZip             string       `json:"from_zip" db:"sender_zip"`
+	ConversationID      uuid.UUID    `json:"conversation_id" db:"conversation_id"`
 }
 
 // String is not required by pop and may be deleted
@@ -47,9 +47,7 @@ func (m Messages) String() string {
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
 // This method is not required and may be deleted.
 func (m *Message) Validate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.Validate(
-		&validators.StringIsPresent{Field: m.Body, Name: "Body"},
-	), nil
+	return validate.NewErrors(), nil
 }
 
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.

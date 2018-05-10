@@ -1,8 +1,6 @@
 package actions
 
 import (
-	"fmt"
-
 	"github.com/campaignctrl/textcampaign/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
@@ -52,13 +50,10 @@ func MessagesList(c buffalo.Context) error {
 func MessagesCreate(c buffalo.Context) error {
 	// Allocate an empty Message
 	message := &models.Message{}
-	fmt.Println("message reached")
 	// Bind message to the html form elements
 	if err := c.Bind(message); err != nil {
-		fmt.Println("binding error >>>>>>>")
 		return errors.WithStack(err)
 	}
-	fmt.Println("message has:", message)
 
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
@@ -66,23 +61,31 @@ func MessagesCreate(c buffalo.Context) error {
 		return errors.WithStack(errors.New("no transaction found"))
 	}
 
-	// Validate the data from the html form
+	cn := &models.Conversation{}
+	withPriorRecord, _ := tx.Where("sender_no = ?", message.From).Order("created_at").Exists("messages")
+	if withPriorRecord {
+		q := tx.Q().LeftJoin("messages", "conversations.id=messages.conversation_id").Where("conversations.status = ?", models.ConvPending).Order("created_at DESC")
+		exist, _ := q.Exists(cn)
+		if exist {
+			q.First(cn)
+		} else {
+			cn.Create(tx)
+		}
+
+		message.ConversationID = cn.ID
+	} else {
+		cn.Create(tx)
+	}
+
+	message.ConversationID = cn.ID
 	verrs, err := tx.ValidateAndCreate(message)
 	if err != nil {
-		fmt.Println("error in ValidateAndCreate::::: ", err)
 		return errors.WithStack(err)
 	}
 
 	if verrs.HasAny() {
-		// Make the errors available inside the html template
-		c.Set("errors", verrs)
-
-		// Render again the new.html template that the user can
-		// correct the input.
-		return c.Render(422, r.Auto(c, message))
+		return c.Render(422, r.JSON(verrs))
 	}
 
-	// and redirect to the messages index page
-	return c.Render(200, r.JSON(map[string]string{"message": "Welcome to another Buffalo!"}))
-	// return c.Render(201, r.Auto(c, message))
+	return c.Render(200, r.JSON(message))
 }
