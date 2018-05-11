@@ -22,7 +22,7 @@ func ConversationsList(c buffalo.Context) error {
 	q := tx.PaginateFromParams(c.Params())
 
 	// Retrieve all Messages from the DB
-	if err := q.All(cnvrs); err != nil {
+	if err := q.Order("created_at DESC").All(cnvrs); err != nil {
 		return errors.WithStack(err)
 	}
 

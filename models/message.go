@@ -13,22 +13,22 @@ import (
 type Message struct {
 	ID                  uuid.UUID    `json:"id" db:"id"`
 	Body                string       `json:"body" db:"body"`
-	CreatedAt           time.Time    `json:"created_at" db:"created_at"`
-	UpdatedAt           time.Time    `json:"updated_at" db:"updated_at"`
-	AccountSid          string       `json:"account_sid" db:"account_sid"`
-	MessageSid          string       `json:"message_sid" db:"message_sid"`
-	MessagingServiceSid string       `json:"messaging_service_sid" db:"messaging_service_sid"`
-	SmsMessageSid       string       `json:"sms_message_sid" db:"sms_message_sid"`
+	CreatedAt           time.Time    `json:"createdAt" db:"created_at"`
+	UpdatedAt           time.Time    `json:"updatedAt" db:"updated_at"`
+	AccountSid          string       `json:"accountSid" db:"account_sid"`
+	MessageSid          string       `json:"messageSid" db:"message_sid"`
+	MessagingServiceSid string       `json:"messagingServiceSid" db:"messaging_service_sid"`
+	SmsMessageSid       string       `json:"sms_messageSid" db:"sms_message_sid"`
 	Direction           string       `json:"direction" db:"direction"`
 	Status              string       `json:"status" db:"status"`
 	To                  nulls.String `json:"to" db:"reciever_no"`
 	From                nulls.String `json:"from" db:"sender_no"`
-	FromCity            string       `json:"from_city" db:"sender_city"`
-	FromCountry         string       `json:"from_country" db:"sender_country"`
-	FromState           string       `json:"from_state" db:"sender_state"`
-	FromZip             string       `json:"from_zip" db:"sender_zip"`
-	ConversationID      uuid.UUID    `json:"conversation_id" db:"conversation_id"`
-	UserID              nulls.UUID   `json:"user_id" db:"user_id"`
+	FromCity            string       `json:"fromCity" db:"sender_city"`
+	FromCountry         string       `json:"fromCountry" db:"sender_country"`
+	FromState           string       `json:"fromCtate" db:"sender_state"`
+	FromZip             string       `json:"fromZip" db:"sender_zip"`
+	ConversationID      uuid.UUID    `json:"conversationId" db:"conversation_id"`
+	UserID              nulls.UUID   `json:"userId" db:"user_id"`
 }
 
 // String is not required by pop and may be deleted

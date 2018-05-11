@@ -14,12 +14,12 @@ import (
 
 type User struct {
 	ID        uuid.UUID `json:"id" db:"id"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
-	UserName  string    `json:"user_name" db:"user_name"`
-	FirstName string    `json:"first_name" db:"first_name"`
-	LastName  string    `json:"last_name" db:"last_name"`
-	PhoneNo   string    `json:"phone_no" db:"phone_no"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+	UserName  string    `json:"userName" db:"user_name"`
+	FirstName string    `json:"firstName" db:"first_name"`
+	LastName  string    `json:"lastName" db:"last_name"`
+	PhoneNo   string    `json:"phoneNo" db:"phone_no"`
 	Password  string    `json:"password,omitempty" db:"password"`
 }
 
