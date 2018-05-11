@@ -35,8 +35,8 @@ func UsersShow(c buffalo.Context) error {
 	if err := tx.Find(user, c.Param("user_id")); err != nil {
 		return c.Error(404, err)
 	}
-
-	return c.Render(200, r.Auto(c, user))
+	user.Password = ""
+	return c.Render(200, r.JSON(user))
 }
 
 // UsersCreate adds a User to the DB. This function is mapped to the

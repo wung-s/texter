@@ -57,6 +57,7 @@ func App() *buffalo.App {
 		app.GET("/", HomeHandler)
 		app.POST("/login", LoginHandler)
 		app.POST("/users", UsersCreate)
+		app.GET("/users/{user_id}", UsersShow)
 		app.GET("/conversations", ConversationsList)
 		app.GET("/conversations/{conversation_id}", ConversationsShow)
 		app.POST("/messages", twilCreateHandler)
