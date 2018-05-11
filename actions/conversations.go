@@ -58,3 +58,36 @@ func ConversationsList(c buffalo.Context) error {
 	c.Set("pagination", q.Paginator)
 	return c.Render(200, r.JSON(result))
 }
+
+// ConversationsShow gets the data for one Conversation. This function is mapped to
+// the path GET /conversations/{conversation_id}
+func ConversationsShow(c buffalo.Context) error {
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return errors.WithStack(errors.New("no transaction found"))
+	}
+
+	// Allocate an empty User
+	cnvr := &models.Conversation{}
+
+	// To find the User the parameter user_id is used.
+	if err := tx.Find(cnvr, c.Param("conversation_id")); err != nil {
+		return c.Error(404, err)
+	}
+
+	messages := &models.Messages{}
+	q := tx.BelongsTo(cnvr)
+	if err := q.Order("created_at ASC").All(messages); err != nil {
+		return errors.WithStack(err)
+	}
+
+	result := struct {
+		models.Conversation
+		Messages models.Messages `json:"messages"`
+	}{
+		*cnvr,
+		*messages,
+	}
+	return c.Render(200, r.JSON(result))
+}
