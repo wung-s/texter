@@ -14,7 +14,7 @@ import (
 )
 
 type LoginParams struct {
-	UserName string `json:"user_name" db:"user_name"`
+	UserName string `json:"userName" db:"user_name"`
 	Password string `json:"password,omitempty" db:"-"`
 }
 
