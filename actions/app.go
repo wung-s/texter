@@ -26,7 +26,7 @@ func App() *buffalo.App {
 			Env:          ENV,
 			SessionStore: sessions.Null{},
 			PreWares: []buffalo.PreWare{
-				cors.Default().Handler,
+				cors.AllowAll().Handler,
 			},
 			SessionName: "_textcampaign_session",
 		})
