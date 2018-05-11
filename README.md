@@ -28,11 +28,15 @@ If you point your browser to [http://127.0.0.1:4000](http://127.0.0.1:4000) you 
     $ heroku config:set TWILIO_AC_SID=abcdef
     $ heroku config:set TWILIO_AUTH_TOKEN=abcdef
     $ heroku config:set BASE_URL=f7da2e67.ngrok.io
+    $ heroku config:set MASTER_USERNAME=master@test.com
+    $ heroku config:set MASTER_PASSWORD=ffffff
 
 ### Deployment
 
     $ heroku container:login
     $ heroku container:push web
     $ heroku run /bin/app migrate
+    $ heroku run /bin/app task db:seed
+    $ heroku run /bin/app task db:reset
 
 [Powered by Buffalo](http://gobuffalo.io)
