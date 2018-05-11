@@ -55,6 +55,8 @@ func App() *buffalo.App {
 		twilMsgStatusHandler := FormURLEncodedHeader(AuthenticateForTwilio(MessagesTwilStatus))
 		app.Middleware.Skip(Authenticate, twilCreateHandler)
 
+		twil := app.Group("/twilio")
+
 		app.GET("/", HomeHandler)
 		app.POST("/login", LoginHandler)
 		app.POST("/users", UsersCreate)
@@ -62,8 +64,9 @@ func App() *buffalo.App {
 		app.GET("/conversations", ConversationsList)
 		app.GET("/conversations/{conversation_id}", ConversationsShow)
 		app.POST("/messages", MessagesCreate)
-		app.POST("/messages/twilio", twilCreateHandler)
-		app.POST("/messages/status", twilMsgStatusHandler)
+
+		twil.POST("/messages", twilCreateHandler)
+		twil.POST("/messages/status", twilMsgStatusHandler)
 
 	}
 

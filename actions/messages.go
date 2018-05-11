@@ -54,7 +54,7 @@ func MessagesList(c buffalo.Context) error {
 // sendSms wraps the logic to send sms via Twilio
 func sendSms(to string, from string, message string) (*gotwilio.SmsResponse, error) {
 	twilio := gotwilio.NewTwilioClient(os.Getenv("TWILIO_AC_SID"), os.Getenv("TWILIO_AUTH_TOKEN"))
-	callbackURL := fmt.Sprintf("https://%v:%v@%v/messages/status", os.Getenv("TWILIO_USER"), os.Getenv("TWILIO_PW"), os.Getenv("BASE_URL"))
+	callbackURL := fmt.Sprintf("https://%v:%v@%v/twilio/messages/status", os.Getenv("TWILIO_USER"), os.Getenv("TWILIO_PW"), os.Getenv("BASE_URL"))
 	resp, _, err := twilio.SendSMS(from, to, message, callbackURL, "")
 	if err != nil {
 		return nil, err
