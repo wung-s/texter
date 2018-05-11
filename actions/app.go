@@ -49,7 +49,7 @@ func App() *buffalo.App {
 		app.Use(Authenticate)
 
 		// Skip the Authenticate middleware for the listed handlers
-		app.Middleware.Skip(Authenticate, LoginHandler)
+		app.Middleware.Skip(Authenticate, HomeHandler, LoginHandler)
 
 		twilCreateHandler := FormURLEncodedHeader(AuthenticateForTwilio(MessagesTwilCreate))
 		twilMsgStatusHandler := FormURLEncodedHeader(AuthenticateForTwilio(MessagesTwilStatus))
