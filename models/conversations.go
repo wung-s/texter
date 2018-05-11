@@ -14,12 +14,11 @@ var ConvPending = "pending"
 
 // Conversation holds the structure of a conversaton
 type Conversation struct {
-	ID     uuid.UUID `json:"id" db:"id"`
-	Status string    `json:"status" db:"status"`
-	// Messages  Messages   `has_many:"messages"`
-	UserID    nulls.UUID `json:"user_id" db:"user_id"`
-	CreatedAt time.Time  `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
+	ID        uuid.UUID  `json:"id" db:"id"`
+	Status    string     `json:"status" db:"status"`
+	UserID    nulls.UUID `json:"userID" db:"user_id"`
+	CreatedAt time.Time  `json:"createdAt" db:"created_at"`
+	UpdatedAt time.Time  `json:"updatedAt" db:"updated_at"`
 }
 
 // Conversations is not required by pop and may be deleted
@@ -48,3 +47,12 @@ func (c *Conversation) Create(tx *pop.Connection) (*validate.Errors, error) {
 	c.Status = ConvPending
 	return tx.ValidateAndCreate(c)
 }
+
+// ConvrWithLastMsg holds conversation along with the latest message
+type ConvrWithLastMsg struct {
+	Conversation
+	LastMessage Message `json:"lastMessage"`
+}
+
+// ConvrsWithLastMsg holds a collection of ConvrWithLastMsg
+type ConvrsWithLastMsg []ConvrWithLastMsg
