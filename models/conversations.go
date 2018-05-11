@@ -48,6 +48,13 @@ func (c *Conversation) Create(tx *pop.Connection) (*validate.Errors, error) {
 	return tx.ValidateAndCreate(c)
 }
 
+// Exist checks for an existing active conversation with respect to a phone number
+func (c *Conversation) Exist(tx *pop.Connection, phoneNo nulls.String) (*pop.Query, bool, error) {
+	q := tx.Q().LeftJoin("messages", "conversations.id=messages.conversation_id").Where("conversations.status = ?", ConvPending).Where("(sender_no = ? or reciever_no = ?)", phoneNo, phoneNo).Order("created_at DESC")
+	exist, err := q.Exists(c)
+	return q, exist, err
+}
+
 // ConvrWithLastMsg holds conversation along with the latest message
 type ConvrWithLastMsg struct {
 	Conversation

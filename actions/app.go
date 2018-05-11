@@ -51,7 +51,8 @@ func App() *buffalo.App {
 		// Skip the Authenticate middleware for the listed handlers
 		app.Middleware.Skip(Authenticate, LoginHandler)
 
-		twilCreateHandler := FormURLEncodedHeader(AuthenticateForTwilio(MessagesCreate))
+		twilCreateHandler := FormURLEncodedHeader(AuthenticateForTwilio(MessagesTwilCreate))
+		twilMsgStatusHandler := FormURLEncodedHeader(AuthenticateForTwilio(MessagesTwilStatus))
 		app.Middleware.Skip(Authenticate, twilCreateHandler)
 
 		app.GET("/", HomeHandler)
@@ -60,7 +61,9 @@ func App() *buffalo.App {
 		app.GET("/users/{user_id}", UsersShow)
 		app.GET("/conversations", ConversationsList)
 		app.GET("/conversations/{conversation_id}", ConversationsShow)
-		app.POST("/messages", twilCreateHandler)
+		app.POST("/messages", MessagesCreate)
+		app.POST("/messages/twilio", twilCreateHandler)
+		app.POST("/messages/status", twilMsgStatusHandler)
 
 	}
 

@@ -25,6 +25,9 @@ If you point your browser to [http://127.0.0.1:4000](http://127.0.0.1:4000) you 
     $ heroku config:set GO_ENV=production
     $ heroku config:set TWILIO_USER=abcdef
     $ heroku config:set TWILIO_PW=abcdef
+    $ heroku config:set TWILIO_AC_SID=abcdef
+    $ heroku config:set TWILIO_AUTH_TOKEN=abcdef
+    $ heroku config:set BASE_URL=f7da2e67.ngrok.io
 
 ### Deployment
 

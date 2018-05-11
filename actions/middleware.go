@@ -82,7 +82,6 @@ func setCurrentUser(uid string, c buffalo.Context) error {
 		return err
 	}
 
-	user.Password = ""
-	c.Set("currentUser", user)
+	c.Set("currentUserID", user.ID)
 	return nil
 }

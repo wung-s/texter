@@ -1,0 +1,2 @@
+drop_foreign_key("messages", "messages_users_id_fk", {"if_exists": true})
+drop_column("messages", "user_id")

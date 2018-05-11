@@ -349,6 +349,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/sfreiberg/gotwilio"
+  packages = ["."]
+  revision = "929c4ff2451b204e69dcb1062cd59c9810ebf606"
+
+[[projects]]
+  branch = "master"
   name = "github.com/shurcooL/github_flavored_markdown"
   packages = ["."]
   revision = "28433ea3fc83827d77424782fefdcd94703366cc"
@@ -478,6 +484,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e6fab6c028c234a3fa280df866f9507a42da5f1fe1ca8ab023cb1f5fd8cd8398"
+  inputs-digest = "dc001a4fdfd1d5cd89f9ded6f1cad6cfb6cd9031ea773163206fe0a53adddeb2"
   solver-name = "gps-cdcl"
   solver-version = 1

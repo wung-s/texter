@@ -1,0 +1,1 @@
+rename_column("messages", "sms_sid", "direction")

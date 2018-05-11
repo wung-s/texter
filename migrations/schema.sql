@@ -60,7 +60,7 @@ CREATE TABLE messages (
     message_sid character varying(255) DEFAULT ''::character varying NOT NULL,
     messaging_service_sid character varying(255) DEFAULT ''::character varying NOT NULL,
     sms_message_sid character varying(255) DEFAULT ''::character varying NOT NULL,
-    sms_sid character varying(255) DEFAULT ''::character varying NOT NULL,
+    direction character varying(255) DEFAULT ''::character varying NOT NULL,
     reciever_no character varying(255) NOT NULL,
     sender_no character varying(255) NOT NULL,
     sender_city character varying(255) NOT NULL,
@@ -69,7 +69,9 @@ CREATE TABLE messages (
     sender_zip character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    conversation_id uuid NOT NULL
+    conversation_id uuid NOT NULL,
+    status character varying(255) DEFAULT ''::character varying NOT NULL,
+    user_id uuid
 );
 
 
@@ -184,6 +186,14 @@ ALTER TABLE ONLY conversations
 
 ALTER TABLE ONLY messages
     ADD CONSTRAINT messages_conversations_id_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: messages messages_users_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY messages
+    ADD CONSTRAINT messages_users_id_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 
 --

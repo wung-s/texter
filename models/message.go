@@ -19,7 +19,8 @@ type Message struct {
 	MessageSid          string       `json:"message_sid" db:"message_sid"`
 	MessagingServiceSid string       `json:"messaging_service_sid" db:"messaging_service_sid"`
 	SmsMessageSid       string       `json:"sms_message_sid" db:"sms_message_sid"`
-	SmsSid              string       `json:"sms_sid" db:"sms_sid"`
+	Direction           string       `json:"direction" db:"direction"`
+	Status              string       `json:"status" db:"status"`
 	To                  nulls.String `json:"to" db:"reciever_no"`
 	From                nulls.String `json:"from" db:"sender_no"`
 	FromCity            string       `json:"from_city" db:"sender_city"`
@@ -27,6 +28,7 @@ type Message struct {
 	FromState           string       `json:"from_state" db:"sender_state"`
 	FromZip             string       `json:"from_zip" db:"sender_zip"`
 	ConversationID      uuid.UUID    `json:"conversation_id" db:"conversation_id"`
+	UserID              nulls.UUID   `json:"user_id" db:"user_id"`
 }
 
 // String is not required by pop and may be deleted
