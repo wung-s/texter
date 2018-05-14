@@ -1,0 +1,32 @@
+[[scenario]]
+name = "single contact, single group, single association"
+
+  [[scenario.table]]
+    name = "contacts"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("contact") %>"
+      first_name = "Wung"
+      last_name = "Shaiza"
+      phone_no = "+1111111111"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+  [[scenario.table]]
+    name = "groups"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("group") %>"
+      name = "group 1"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+  [[scenario.table]]
+    name = "contact_groups"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      contact_id = "<%= uuidNamed("contact") %>"
+      group_id = "<%= uuidNamed("group") %>"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"

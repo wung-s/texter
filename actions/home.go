@@ -57,7 +57,7 @@ func LoginHandler(c buffalo.Context) error {
 		if err != nil {
 			return fmt.Errorf("could not sign token, %v", err)
 		}
-
+		c.Response().Header().Set("Token", tokenString)
 		return c.Render(200, r.JSON(map[string]string{"token": tokenString}))
 	}
 

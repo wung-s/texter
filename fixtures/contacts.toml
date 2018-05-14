@@ -1,0 +1,13 @@
+[[scenario]]
+name = "single contact"
+
+  [[scenario.table]]
+    name = "contacts"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      first_name = "Wung"
+      last_name = "Shaiza"
+      phone_no = "+1111111111"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"

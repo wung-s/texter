@@ -1,0 +1,15 @@
+[[scenario]]
+name = "admin user"
+
+  [[scenario.table]]
+    name = "users"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      first_name = "Wung"
+      last_name = "Shaiza"
+      user_name = "admin"
+      phone_no = "+1111111111"
+      password = "$2a$14$JSJPI4FTlCFjgSX89JuzOu9TWuS3O8Jjw3oPKjRAa4AW16hIuKT92"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"

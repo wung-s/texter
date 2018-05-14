@@ -35,6 +35,37 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: contact_groups; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE contact_groups (
+    id uuid NOT NULL,
+    contact_id uuid NOT NULL,
+    group_id uuid NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE contact_groups OWNER TO postgres;
+
+--
+-- Name: contacts; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE contacts (
+    id uuid NOT NULL,
+    first_name character varying(255),
+    last_name character varying(255),
+    phone_no character varying(255) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE contacts OWNER TO postgres;
+
+--
 -- Name: conversations; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -48,6 +79,21 @@ CREATE TABLE conversations (
 
 
 ALTER TABLE conversations OWNER TO postgres;
+
+--
+-- Name: groups; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE groups (
+    id uuid NOT NULL,
+    name character varying(255) NOT NULL,
+    description text DEFAULT ''::text NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE groups OWNER TO postgres;
 
 --
 -- Name: messages; Type: TABLE; Schema: public; Owner: postgres
@@ -107,11 +153,35 @@ CREATE TABLE users (
 ALTER TABLE users OWNER TO postgres;
 
 --
+-- Name: contact_groups contact_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contact_groups
+    ADD CONSTRAINT contact_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: contacts contacts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contacts
+    ADD CONSTRAINT contacts_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: conversations conversations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY conversations
     ADD CONSTRAINT conversations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: groups groups_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY groups
+    ADD CONSTRAINT groups_pkey PRIMARY KEY (id);
 
 
 --
@@ -128,6 +198,13 @@ ALTER TABLE ONLY messages
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: contact_groups_contact_id_group_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX contact_groups_contact_id_group_id_idx ON contact_groups USING btree (contact_id, group_id);
 
 
 --
@@ -170,6 +247,22 @@ CREATE UNIQUE INDEX users_user_name_idx ON users USING btree (user_name);
 --
 
 CREATE UNIQUE INDEX version_idx ON schema_migration USING btree (version);
+
+
+--
+-- Name: contact_groups contact_groups_contact_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contact_groups
+    ADD CONSTRAINT contact_groups_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE;
+
+
+--
+-- Name: contact_groups contact_groups_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contact_groups
+    ADD CONSTRAINT contact_groups_group_id_fkey FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE;
 
 
 --

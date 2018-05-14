@@ -1,0 +1,2 @@
+drop_index("contact_groups", "contact_groups_contact_id_group_id_idx")
+drop_table("contact_groups")

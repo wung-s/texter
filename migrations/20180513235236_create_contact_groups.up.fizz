@@ -1,0 +1,9 @@
+create_table("contact_groups", func(t) {
+	t.Column("id", "uuid", {"primary": true})
+	t.Column("contact_id", "uuid", {})
+	t.Column("group_id", "uuid", {})
+	t.ForeignKey("contact_id", {"contacts": ["id"]}, {"on_delete": "cascade"})
+	t.ForeignKey("group_id", {"groups": ["id"]}, {"on_delete": "cascade"})
+})
+
+add_index("contact_groups", ["contact_id", "group_id"], {"unique": true})

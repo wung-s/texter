@@ -1,0 +1,28 @@
+[[scenario]]
+name = "single group"
+
+  [[scenario.table]]
+    name = "groups"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      name = "group 1"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+[[scenario]]
+name = "two group"
+
+  [[scenario.table]]
+    name = "groups"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      name = "group 1"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      name = "group 2"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"

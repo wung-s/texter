@@ -64,10 +64,14 @@ func App() *buffalo.App {
 		app.GET("/conversations", ConversationsList)
 		app.GET("/conversations/{conversation_id}", ConversationsShow)
 		app.POST("/messages", MessagesCreate)
+		app.POST("/contacts", ContactsCreate)
+		app.PUT("/contacts/{contact_id}", ContactsUpdate)
+		app.GET("/groups", GroupsList)
+		app.POST("/groups", GroupsCreate)
+		app.DELETE("/groups/{group_id}", GroupsDestroy)
 
 		twil.POST("/messages", twilCreateHandler)
 		twil.POST("/messages/status", twilMsgStatusHandler)
-
 	}
 
 	return app
