@@ -30,7 +30,7 @@ type ContactsResource struct {
 
 // List gets all Contacts. This function is mapped to the path
 // GET /contacts
-func (v ContactsResource) List(c buffalo.Context) error {
+func ContactsList(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
@@ -39,21 +39,17 @@ func (v ContactsResource) List(c buffalo.Context) error {
 
 	contacts := &models.Contacts{}
 
-	// Paginate results. Params "page" and "per_page" control pagination.
-	// Default values are "page=1" and "per_page=20".
-	// q := tx.PaginateFromParams(c.Params())
-
 	// Retrieve all Contacts from the DB
 	if err := tx.All(contacts); err != nil {
 		return errors.WithStack(err)
 	}
 
-	return c.Render(200, r.Auto(c, contacts))
+	return c.Render(200, r.JSON(contacts))
 }
 
 // Show gets the data for one Contact. This function is mapped to
 // the path GET /contacts/{contact_id}
-func (v ContactsResource) Show(c buffalo.Context) error {
+func ContactsShow(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
