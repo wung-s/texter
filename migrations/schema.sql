@@ -66,6 +66,23 @@ CREATE TABLE contacts (
 ALTER TABLE contacts OWNER TO postgres;
 
 --
+-- Name: contacts_view; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW contacts_view AS
+ SELECT contacts.id,
+    contacts.first_name,
+    contacts.last_name,
+    contacts.phone_no,
+    contacts.created_at,
+    contacts.updated_at,
+    concat_ws(' '::text, (contacts.first_name)::text, (contacts.last_name)::text) AS full_name
+   FROM contacts;
+
+
+ALTER TABLE contacts_view OWNER TO postgres;
+
+--
 -- Name: conversations; Type: TABLE; Schema: public; Owner: postgres
 --
 

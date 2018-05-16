@@ -65,6 +65,7 @@ func App() *buffalo.App {
 		app.GET("/conversations/{conversation_id}", ConversationsShow)
 		app.POST("/messages", MessagesCreate)
 		app.GET("/contacts", ContactsList)
+		app.GET("/contacts/search", ContactsSearch)
 		app.POST("/contacts", ContactsCreate)
 		app.PUT("/contacts/{contact_id}", ContactsUpdate)
 		app.GET("/groups", GroupsList)

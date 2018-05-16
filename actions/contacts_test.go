@@ -107,7 +107,7 @@ func (as *ActionSuite) Test_ContactsCreate_With_Group() {
 		FirstName: "Wung",
 		LastName:  "Shaiza",
 		PhoneNo:   "+1111111111",
-		AddGroup:   []uuid.UUID{grp.ID},
+		AddGroup:  []uuid.UUID{grp.ID},
 	})
 
 	contactCntAfter, _ := models.DB.Count(contact)
@@ -245,4 +245,19 @@ func (as *ActionSuite) Test_ContactsUpdate_Remove_Group() {
 
 	contactCntAfter, _ := models.DB.Count(contact1)
 	as.Equal(contactCntAfter, contactCntBefore)
+}
+
+// Search
+
+func (as *ActionSuite) Test_ContactsSearch() {
+	as.LoadFixture("admin user")
+	as.LoadFixture("three contact")
+	as.Login()
+
+	// contacts := &models.ContactsView{}
+
+	res := as.JSON("/contacts/search?q=wung").Get()
+
+	as.Equal(200, res.Code)
+	as.Contains(res.Body.String(), "Wung")
 }

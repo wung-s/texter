@@ -28,7 +28,7 @@ type ContactsResource struct {
 	buffalo.Resource
 }
 
-// List gets all Contacts. This function is mapped to the path
+// ContactsList gets all Contacts. This function is mapped to the path
 // GET /contacts
 func ContactsList(c buffalo.Context) error {
 	// Get the DB connection from the context
@@ -38,13 +38,32 @@ func ContactsList(c buffalo.Context) error {
 	}
 
 	contacts := &models.Contacts{}
+	q := tx.PaginateFromParams(c.Params())
 
 	// Retrieve all Contacts from the DB
-	if err := tx.All(contacts); err != nil {
+	if err := q.All(contacts); err != nil {
 		return errors.WithStack(err)
 	}
 
-	return c.Render(200, r.JSON(contacts))
+	result := struct {
+		*models.Contacts   `json:"contacts"`
+		Page               int `json:"page"`
+		PerPage            int `json:"perPage"`
+		Offset             int `json:"offset"`
+		TotalEntriesSize   int `json:"totalEntriesSize"`
+		CurrentEntriesSize int `json:"currentEntriesSize"`
+		TotalPages         int `json:"totalPages"`
+	}{
+		contacts,
+		q.Paginator.Page,
+		q.Paginator.PerPage,
+		q.Paginator.Offset,
+		q.Paginator.TotalEntriesSize,
+		q.Paginator.CurrentEntriesSize,
+		q.Paginator.TotalPages,
+	}
+
+	return c.Render(200, r.JSON(result))
 }
 
 // Show gets the data for one Contact. This function is mapped to
@@ -205,4 +224,46 @@ func (v ContactsResource) Destroy(c buffalo.Context) error {
 
 	// Redirect to the contacts index page
 	return c.Render(200, r.Auto(c, contact))
+}
+
+// ContactsSearch perform search on Contacts. This function is mapped to the path
+// GET /contacts/search
+func ContactsSearch(c buffalo.Context) error {
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return errors.WithStack(errors.New("no transaction found"))
+	}
+
+	q := tx.Q()
+
+	contacts := &models.ContactsView{}
+	if err := contacts.FilterFromParam(q.PaginateFromParams(c.Params()), c); err != nil {
+		return c.Error(404, err)
+	}
+
+	// Retrieve all Contacts from the DB
+	if err := q.All(contacts); err != nil {
+		return errors.WithStack(err)
+	}
+
+	result := &struct {
+		Contacts           *models.ContactsView `json:"contacts"`
+		Page               int                  `json:"page"`
+		PerPage            int                  `json:"perPage"`
+		Offset             int                  `json:"offset"`
+		TotalEntriesSize   int                  `json:"totalEntriesSize"`
+		CurrentEntriesSize int                  `json:"currentEntriesSize"`
+		TotalPages         int                  `json:"totalPages"`
+	}{
+		contacts,
+		q.Paginator.Page,
+		q.Paginator.PerPage,
+		q.Paginator.Offset,
+		q.Paginator.TotalEntriesSize,
+		q.Paginator.CurrentEntriesSize,
+		q.Paginator.TotalPages,
+	}
+
+	return c.Render(200, r.JSON(result))
 }

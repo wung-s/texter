@@ -11,3 +11,33 @@ name = "single contact"
       phone_no = "+1111111111"
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
+
+[[scenario]]
+name = "three contact"
+
+  [[scenario.table]]
+    name = "contacts"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      first_name = "Peter"
+      last_name = "Meter"
+      phone_no = "+22222"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      first_name = "Wung"
+      last_name = "Shaiza"
+      phone_no = "+1111111111"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      first_name = "Randy"
+      last_name = "Ordon"
+      phone_no = "+3333333333"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"

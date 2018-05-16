@@ -1,0 +1,1 @@
+raw("DROP VIEW contacts_view;")

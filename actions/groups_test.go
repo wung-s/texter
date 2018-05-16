@@ -27,7 +27,7 @@ func (as *ActionSuite) Test_GroupsCreate() {
 	grpCntBefore, _ := models.DB.Count(grp)
 
 	res := as.JSON("/groups").Post(models.Group{
-		Name: "Group 1",
+		Name:        "Group 1",
 		Description: "some description",
 	})
 

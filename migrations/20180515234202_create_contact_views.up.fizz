@@ -1,0 +1,1 @@
+raw("CREATE VIEW contacts_view AS SELECT *, concat_ws(' ', first_name::text, last_name::text) AS full_name FROM contacts;")
