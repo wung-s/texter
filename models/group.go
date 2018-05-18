@@ -61,11 +61,12 @@ func (g *Group) AssociateContacts(tx *pop.Connection, contactIDs []uuid.UUID) (*
 			GroupID:   g.ID,
 			ContactID: cID,
 		}
-		if err1, err2 := tx.ValidateAndCreate(tmp); err1 != nil || err2 != nil {
-			return err1, err2
+		if verrs, err2 := tx.ValidateAndCreate(tmp); verrs.HasAny() || err2 != nil {
+			return verrs, err2
 		}
 	}
-	return nil, nil
+
+	return validate.NewErrors(), nil
 }
 
 // DissociateContacts wraps the logic of creating the association between contacts and group

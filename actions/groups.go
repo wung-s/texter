@@ -67,8 +67,8 @@ func GroupsShow(c buffalo.Context) error {
 type GroupParams struct {
 	Name           string      `json:"name"`
 	Description    string      `json:"description"`
-	AddContacts    []uuid.UUID `json:"add_contacts"`
-	RemoveContacts []uuid.UUID `json:"remove_contacts"`
+	AddContacts    []uuid.UUID `json:"addContacts"`
+	RemoveContacts []uuid.UUID `json:"removeContacts"`
 }
 
 // GroupsCreate adds a Group to the DB. This function is mapped to the

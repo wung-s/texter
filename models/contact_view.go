@@ -49,7 +49,7 @@ func (c ContactsView) FilterFromParam(q *pop.Query, ctx buffalo.Context) error {
 	if ctx.Param("group_id") != "" {
 		q.LeftJoin("contact_groups", "contacts_view.id = contact_groups.contact_id").Where("group_id = ?", ctx.Param("group_id"))
 	} else if ctx.Param("omit_group_id") != "" {
-		q.LeftJoin("contact_groups", "contacts_view.id = contact_groups.contact_id").Where("(group_id != ? OR group_id IS NULL)", ctx.Param("omit_group_id"))
+		q.Where("contacts_view.id NOT IN (select cg.contact_id from contact_groups as cg where group_id = ? )", ctx.Param("omit_group_id"))
 	}
 
 	return nil
