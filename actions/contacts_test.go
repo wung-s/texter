@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"encoding/json"
+
 	"github.com/campaignctrl/textcampaign/models"
 	"github.com/gobuffalo/pop/nulls"
 	"github.com/gobuffalo/uuid"
@@ -249,15 +251,72 @@ func (as *ActionSuite) Test_ContactsUpdate_Remove_Group() {
 
 // Search
 
+func (as *ActionSuite) Test_ContactsSearch_Without_Login() {
+	res := as.JSON("/contacts/search?name=wung").Get()
+	as.Equal(401, res.Code)
+}
+
 func (as *ActionSuite) Test_ContactsSearch() {
 	as.LoadFixture("admin user")
 	as.LoadFixture("three contact")
 	as.Login()
 
-	// contacts := &models.ContactsView{}
-
-	res := as.JSON("/contacts/search?q=wung").Get()
+	res := as.JSON("/contacts/search?name=wung").Get()
 
 	as.Equal(200, res.Code)
 	as.Contains(res.Body.String(), "Wung")
+}
+
+func (as *ActionSuite) Test_ContactsSearch_With_GroupID() {
+	as.LoadFixture("admin user")
+	as.LoadFixture("one contact with group, one without group")
+	as.Login()
+
+	cntGrp := &models.ContactGroup{}
+	as.NoError(models.DB.First(cntGrp))
+
+	res := as.JSON("/contacts/search?group_id=" + cntGrp.GroupID.String()).Get()
+	result := &ContactSearchResult{}
+	json.Unmarshal([]byte(res.Body.String()), result)
+
+	contacts := *result.Contacts
+	as.Equal(len(contacts), 1)
+	as.Contains(contacts.String(), "Peter")
+	as.Equal(200, res.Code)
+}
+
+func (as *ActionSuite) Test_ContactsSearch_With_GroupID_And_Name() {
+	as.LoadFixture("admin user")
+	as.LoadFixture("one contact with group, one without group")
+	as.Login()
+
+	cntGrp := &models.ContactGroup{}
+	as.NoError(models.DB.First(cntGrp))
+
+	res := as.JSON("/contacts/search?name=Peter&group_id=" + cntGrp.GroupID.String()).Get()
+	result := &ContactSearchResult{}
+	json.Unmarshal([]byte(res.Body.String()), result)
+
+	contacts := *result.Contacts
+	as.Equal(1, len(contacts))
+	as.Contains(contacts.String(), "Peter")
+	as.Equal(200, res.Code)
+}
+
+func (as *ActionSuite) Test_ContactsSearch_With_OmitGroupID() {
+	as.LoadFixture("admin user")
+	as.LoadFixture("one contact with group, one without group")
+	as.Login()
+
+	cntGrp := &models.ContactGroup{}
+	as.NoError(models.DB.First(cntGrp))
+
+	res := as.JSON("/contacts/search?omit_group_id=" + cntGrp.GroupID.String()).Get()
+	result := &ContactSearchResult{}
+	json.Unmarshal([]byte(res.Body.String()), result)
+
+	contacts := *result.Contacts
+	as.Equal(1, len(contacts))
+	as.NotContains(contacts.String(), "Peter")
+	as.Equal(200, res.Code)
 }

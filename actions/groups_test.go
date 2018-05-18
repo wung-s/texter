@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"fmt"
+
 	"github.com/campaignctrl/textcampaign/models"
 )
 
@@ -48,6 +50,22 @@ func (as *ActionSuite) Test_GroupsCreate_Without_Name() {
 	as.Equal(grpCntAfter, grpCntBefore)
 	as.Equal(422, res.Code)
 
+}
+
+// Destroy
+
+func (as *ActionSuite) Test_GroupsShow() {
+	as.LoadFixture("admin user")
+	as.LoadFixture("two group")
+	as.Login()
+	grp := &models.Group{}
+	models.DB.First(grp)
+
+	res := as.JSON("/groups/" + grp.ID.String()).Get()
+	fmt.Println(res.Body.String())
+	as.Contains(res.Body.String(), "group 1")
+	as.NotContains(res.Body.String(), "group 2")
+	as.Equal(200, res.Code)
 }
 
 // Destroy

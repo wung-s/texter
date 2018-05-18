@@ -18,6 +18,7 @@ type Contact struct {
 	FirstName nulls.String `json:"firstName" db:"first_name"`
 	LastName  nulls.String `json:"lastName" db:"last_name"`
 	PhoneNo   string       `json:"phoneNo" db:"phone_no"`
+	Groups    Groups       `json:"groups,omitempty" many_to_many:"contact_groups"`
 }
 
 // String is not required by pop and may be deleted

@@ -17,6 +17,7 @@ type ContactView struct {
 	PhoneNo   string       `json:"phoneNo" db:"phone_no"`
 	CreatedAt time.Time    `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time    `json:"updated_at" db:"updated_at"`
+	Groups    Groups       `json:"groups,omitempty" many_to_many:"contact_groups"`
 }
 
 // TableName maps to the DB table name
@@ -41,8 +42,15 @@ func (c ContactsView) String() string {
 
 // FilterFromParam applies the filter based on the query value in the params
 func (c ContactsView) FilterFromParam(q *pop.Query, ctx buffalo.Context) error {
-	if ctx.Param("q") != "" {
-		q = q.Where("(full_name ILIKE ?)", "%"+ctx.Param("q")+"%")
+	if ctx.Param("name") != "" {
+		q.Where("(full_name ILIKE ?)", "%"+ctx.Param("name")+"%")
 	}
+
+	if ctx.Param("group_id") != "" {
+		q.LeftJoin("contact_groups", "contacts_view.id = contact_groups.contact_id").Where("group_id = ?", ctx.Param("group_id"))
+	} else if ctx.Param("omit_group_id") != "" {
+		q.LeftJoin("contact_groups", "contacts_view.id = contact_groups.contact_id").Where("(group_id != ? OR group_id IS NULL)", ctx.Param("omit_group_id"))
+	}
+
 	return nil
 }

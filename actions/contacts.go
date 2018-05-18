@@ -66,7 +66,7 @@ func ContactsList(c buffalo.Context) error {
 	return c.Render(200, r.JSON(result))
 }
 
-// Show gets the data for one Contact. This function is mapped to
+// ContactsShow gets the data for one Contact. This function is mapped to
 // the path GET /contacts/{contact_id}
 func ContactsShow(c buffalo.Context) error {
 	// Get the DB connection from the context
@@ -226,6 +226,17 @@ func (v ContactsResource) Destroy(c buffalo.Context) error {
 	return c.Render(200, r.Auto(c, contact))
 }
 
+// ContactSearchResult defines the struct of the response
+type ContactSearchResult struct {
+	Contacts           *models.ContactsView `json:"contacts"`
+	Page               int                  `json:"page"`
+	PerPage            int                  `json:"perPage"`
+	Offset             int                  `json:"offset"`
+	TotalEntriesSize   int                  `json:"totalEntriesSize"`
+	CurrentEntriesSize int                  `json:"currentEntriesSize"`
+	TotalPages         int                  `json:"totalPages"`
+}
+
 // ContactsSearch perform search on Contacts. This function is mapped to the path
 // GET /contacts/search
 func ContactsSearch(c buffalo.Context) error {
@@ -242,20 +253,11 @@ func ContactsSearch(c buffalo.Context) error {
 		return c.Error(404, err)
 	}
 
-	// Retrieve all Contacts from the DB
 	if err := q.All(contacts); err != nil {
 		return errors.WithStack(err)
 	}
 
-	result := &struct {
-		Contacts           *models.ContactsView `json:"contacts"`
-		Page               int                  `json:"page"`
-		PerPage            int                  `json:"perPage"`
-		Offset             int                  `json:"offset"`
-		TotalEntriesSize   int                  `json:"totalEntriesSize"`
-		CurrentEntriesSize int                  `json:"currentEntriesSize"`
-		TotalPages         int                  `json:"totalPages"`
-	}{
+	result := ContactSearchResult{
 		contacts,
 		q.Paginator.Page,
 		q.Paginator.PerPage,

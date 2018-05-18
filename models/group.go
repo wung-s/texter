@@ -16,6 +16,7 @@ type Group struct {
 	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
 	Name        string    `json:"name" db:"name"`
 	Description string    `json:"description" db:"description"`
+	Contacts    Contacts  `json:"contacts,omitempty" many_to_many:"contact_groups"`
 }
 
 // String is not required by pop and may be deleted

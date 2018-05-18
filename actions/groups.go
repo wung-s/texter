@@ -43,6 +43,25 @@ func GroupsList(c buffalo.Context) error {
 	return c.Render(200, r.JSON(groups))
 }
 
+// GroupsShow gets the data for one Group. This function is mapped to
+// the path GET /contacts/{group_id}
+func GroupsShow(c buffalo.Context) error {
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return errors.WithStack(errors.New("no transaction found"))
+	}
+
+	group := &models.Group{}
+
+	// To find the Contact the parameter contact_id is used.
+	if err := tx.Find(group, c.Param("group_id")); err != nil {
+		return c.Error(404, err)
+	}
+
+	return c.Render(200, r.JSON(group))
+}
+
 // GroupsCreate adds a Group to the DB. This function is mapped to the
 // path POST /groups
 func GroupsCreate(c buffalo.Context) error {
