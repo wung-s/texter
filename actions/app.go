@@ -71,6 +71,7 @@ func App() *buffalo.App {
 		app.POST("/groups", GroupsCreate)
 		app.GET("/groups", GroupsList)
 		app.GET("/groups/{group_id}", GroupsShow)
+		app.PUT("/groups/{group_id}", GroupsUpdate)
 		app.DELETE("/groups/{group_id}", GroupsDestroy)
 
 		twil.POST("/messages", twilCreateHandler)

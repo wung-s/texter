@@ -65,9 +65,10 @@ func GroupsShow(c buffalo.Context) error {
 
 // GroupParams holds the acceptable parameters
 type GroupParams struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	AddContacts []uuid.UUID `json:"add_contacts"`
+	Name           string      `json:"name"`
+	Description    string      `json:"description"`
+	AddContacts    []uuid.UUID `json:"add_contacts"`
+	RemoveContacts []uuid.UUID `json:"remove_contacts"`
 }
 
 // GroupsCreate adds a Group to the DB. This function is mapped to the
@@ -113,6 +114,62 @@ func GroupsCreate(c buffalo.Context) error {
 	}
 
 	return c.Render(201, r.JSON(group))
+}
+
+// GroupsUpdate changes a Contact in the DB. This function is mapped to
+// the path PUT /groups/{contact_id}
+func GroupsUpdate(c buffalo.Context) error {
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return errors.WithStack(errors.New("no transaction found"))
+	}
+
+	grpParam := &GroupParams{}
+
+	// Allocate an empty Contact
+	grp := &models.Group{}
+
+	if err := tx.Find(grp, c.Param("group_id")); err != nil {
+		return c.Error(404, err)
+	}
+
+	if err := c.Bind(grpParam); err != nil {
+		return errors.WithStack(err)
+	}
+
+	grp.Name = grpParam.Name
+	grp.Description = grpParam.Description
+
+	verrs, err := tx.ValidateAndUpdate(grp)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if verrs.HasAny() {
+		return c.Render(422, r.Auto(c, grp))
+	}
+
+	if len(grpParam.AddContacts) > 0 {
+		verrs, err = grp.AssociateContacts(tx, grpParam.AddContacts)
+		if err != nil {
+			if err != nil {
+				return errors.WithStack(err)
+			}
+		}
+
+		if verrs.HasAny() {
+			return c.Render(422, r.Auto(c, grp))
+		}
+	}
+
+	if len(grpParam.RemoveContacts) > 0 {
+		if err := grp.DissociateContacts(tx, grpParam.RemoveContacts); err != nil {
+			return errors.WithStack(err)
+		}
+	}
+
+	return c.Render(200, r.Auto(c, grp))
 }
 
 // GroupsDestroy deletes a Group from the DB. This function is mapped

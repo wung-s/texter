@@ -67,3 +67,17 @@ func (g *Group) AssociateContacts(tx *pop.Connection, contactIDs []uuid.UUID) (*
 	}
 	return nil, nil
 }
+
+// DissociateContacts wraps the logic of creating the association between contacts and group
+func (g *Group) DissociateContacts(tx *pop.Connection, contactIDs []uuid.UUID) error {
+	for _, cID := range contactIDs {
+		contact := &Contact{}
+		if err := tx.Find(contact, cID); err != nil {
+			return err
+		}
+		if err := contact.DissociateWithGroup(tx, g.ID); err != nil {
+			return err
+		}
+	}
+	return nil
+}
