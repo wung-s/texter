@@ -53,3 +53,17 @@ func (g *Group) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 func (g *Group) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
 }
+
+// AssociateContacts wraps the logic of creating the association between contacts and group
+func (g *Group) AssociateContacts(tx *pop.Connection, contactIDs []uuid.UUID) (*validate.Errors, error) {
+	for _, cID := range contactIDs {
+		tmp := &ContactGroup{
+			GroupID:   g.ID,
+			ContactID: cID,
+		}
+		if err1, err2 := tx.ValidateAndCreate(tmp); err1 != nil || err2 != nil {
+			return err1, err2
+		}
+	}
+	return nil, nil
+}

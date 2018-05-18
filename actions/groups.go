@@ -4,6 +4,7 @@ import (
 	"github.com/campaignctrl/textcampaign/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/uuid"
 	"github.com/pkg/errors"
 )
 
@@ -62,15 +63,26 @@ func GroupsShow(c buffalo.Context) error {
 	return c.Render(200, r.JSON(group))
 }
 
+// GroupParams holds the acceptable parameters
+type GroupParams struct {
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	AddContacts []uuid.UUID `json:"add_contacts"`
+}
+
 // GroupsCreate adds a Group to the DB. This function is mapped to the
 // path POST /groups
 func GroupsCreate(c buffalo.Context) error {
-	// Allocate an empty Group
-	group := &models.Group{}
+	grpParam := &GroupParams{}
 
 	// Bind group to the html form elements
-	if err := c.Bind(group); err != nil {
+	if err := c.Bind(grpParam); err != nil {
 		return errors.WithStack(err)
+	}
+
+	group := &models.Group{
+		Name:        grpParam.Name,
+		Description: grpParam.Description,
 	}
 
 	// Get the DB connection from the context
@@ -87,6 +99,17 @@ func GroupsCreate(c buffalo.Context) error {
 
 	if verrs.HasAny() {
 		return c.Render(422, r.JSON(verrs))
+	}
+
+	if len(grpParam.AddContacts) > 0 {
+		verrs, err := group.AssociateContacts(tx, grpParam.AddContacts)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		if verrs.HasAny() {
+			return c.Render(422, r.JSON(verrs))
+		}
 	}
 
 	return c.Render(201, r.JSON(group))

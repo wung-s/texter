@@ -161,7 +161,6 @@ func ContactsUpdate(c buffalo.Context) error {
 	contact := &models.Contact{}
 
 	if err := tx.Find(contact, c.Param("contact_id")); err != nil {
-		fmt.Println("RETURN 1 !!!!!!")
 		return c.Error(404, err)
 	}
 

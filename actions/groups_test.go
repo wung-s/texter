@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/campaignctrl/textcampaign/models"
+	"github.com/gobuffalo/uuid"
 )
 
 func (as *ActionSuite) Test_GroupsCreate_Without_Login() {
@@ -50,6 +51,33 @@ func (as *ActionSuite) Test_GroupsCreate_Without_Name() {
 	as.Equal(grpCntAfter, grpCntBefore)
 	as.Equal(422, res.Code)
 
+}
+
+func (as *ActionSuite) Test_GroupsCreate_With_Contacts() {
+	as.LoadFixture("admin user")
+	as.LoadFixture("single contact")
+	as.Login()
+
+	grp := &models.Group{}
+	contact := &models.Contact{}
+	models.DB.First(contact)
+
+	grpCntBefore, _ := models.DB.Count(grp)
+	cnttGrpBefore, _ := models.DB.Count(&models.ContactGroup{})
+
+	res := as.JSON("/groups").Post(GroupParams{
+		Name:        "Group 1",
+		Description: "grp1 description",
+		AddContacts: []uuid.UUID{contact.ID},
+	})
+
+	as.Equal(201, res.Code)
+
+	grpCntAfter, _ := models.DB.Count(grp)
+	as.Equal(grpCntAfter, grpCntBefore+1)
+
+	cnttGrpAfter, _ := models.DB.Count(&models.ContactGroup{})
+	as.Equal(cnttGrpAfter, cnttGrpBefore+1)
 }
 
 // Destroy
