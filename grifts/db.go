@@ -32,7 +32,7 @@ var _ = grift.Namespace("db", func() {
 	grift.Desc("reset", "Resets the database")
 	grift.Add("reset", func(c *grift.Context) error {
 		// Add DB seeding stuff here
-		sql := `TRUNCATE messages, conversations, users CASCADE;`
+		sql := `TRUNCATE messages, contacts, contact_groups, groups, conversations, users CASCADE;`
 		if err := models.DB.RawQuery(sql).Exec(); err != nil {
 			log.Fatalf("error truncating tables: %v", err)
 		} else {
