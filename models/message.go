@@ -2,12 +2,15 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/pop/nulls"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
+	"github.com/sfreiberg/gotwilio"
 )
 
 type Message struct {
@@ -62,4 +65,43 @@ func (m *Message) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 // This method is not required and may be deleted.
 func (m *Message) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
+}
+
+// CreateOrUpdateConversation wraps the logic of either creating or updating a conversation
+func (m *Message) CreateOrUpdateConversation(tx *pop.Connection, to string, userID uuid.UUID) (*validate.Errors, error) {
+	cn := Conversation{
+		UserID: nulls.NewUUID(userID),
+		Status: ConvPending,
+	}
+
+	q, exist, _ := cn.Exist(tx, nulls.NewString(to))
+	if exist {
+		q.First(&cn)
+		m.ConversationID = cn.ID
+		return tx.ValidateAndUpdate(&cn)
+	}
+
+	verrs, err := tx.ValidateAndCreate(&cn)
+	m.ConversationID = cn.ID
+	return verrs, err
+}
+
+// SendSMS wraps the logic in sending SMS
+func (m *Message) SendSMS(to string, from string, message string) error {
+	twilio := gotwilio.NewTwilioClient(os.Getenv("TWILIO_AC_SID"), os.Getenv("TWILIO_AUTH_TOKEN"))
+	callbackURL := fmt.Sprintf("https://%v:%v@%v/twilio/messages/status", os.Getenv("TWILIO_USER"), os.Getenv("TWILIO_PW"), os.Getenv("BASE_URL"))
+	resp, _, err := twilio.SendSMS(from, to, message, callbackURL, "")
+	if err != nil {
+		return err
+	}
+
+	m.MessageSid = resp.Sid
+	m.Body = resp.Body
+	m.AccountSid = resp.AccountSid
+	m.To = nulls.NewString(resp.To)
+	m.From = nulls.NewString(resp.From)
+	m.Status = resp.Status
+	m.Direction = resp.Direction
+
+	return nil
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/campaignctrl/textcampaign/models"
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/buffalo/worker"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/pop/nulls"
 	"github.com/gobuffalo/uuid"
@@ -120,38 +121,25 @@ func MessagesCreate(c buffalo.Context) error {
 	}
 
 	cUserID, _ := c.Value("currentUserID").(uuid.UUID)
+	msg := &models.Message{
+		UserID: nulls.NewUUID(cUserID),
+	}
 
-	resp, err := sendSms(msgParam.To, os.Getenv("TWILIO_NO"), msgParam.Body)
+	err := msg.SendSMS(msgParam.To, os.Getenv("TWILIO_NO"), msgParam.Body)
 	if err != nil {
 		return c.Render(400, r.JSON(err))
 	}
 
-	msg := &models.Message{
-		MessageSid: resp.Sid,
-		Body:       resp.Body,
-		AccountSid: resp.AccountSid,
-		To:         nulls.NewString(resp.To),
-		From:       nulls.NewString(resp.From),
-		Status:     resp.Status,
-		Direction:  resp.Direction,
-		UserID:     nulls.NewUUID(cUserID),
+	verrs, err := msg.CreateOrUpdateConversation(tx, msgParam.To, cUserID)
+	if err != nil {
+		return errors.WithStack(err)
 	}
 
-	cn := &models.Conversation{}
-
-	q, exist, _ := cn.Exist(tx, nulls.NewString(msgParam.To))
-	if exist {
-		q.First(cn)
-		cn.UserID = nulls.NewUUID(cUserID)
-		tx.ValidateAndUpdate(cn)
-	} else {
-		cn.UserID = nulls.NewUUID(cUserID)
-		cn.Create(tx)
+	if verrs.HasAny() {
+		return c.Render(422, r.JSON(verrs))
 	}
 
-	msg.ConversationID = cn.ID
-
-	verrs, err := tx.ValidateAndCreate(msg)
+	verrs, err = tx.ValidateAndCreate(msg)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -161,6 +149,55 @@ func MessagesCreate(c buffalo.Context) error {
 	}
 
 	return c.Render(200, r.JSON(msg))
+}
+
+type MessageGrpParam struct {
+	GroupID uuid.UUID `json:"groupID"`
+	Body    string    `json:"body"`
+}
+
+// MessagesGroupCreate adds messages for the contacts in the group. This function
+// is mapped to POST /messages/group
+func MessagesGroupCreate(c buffalo.Context) error {
+	msgGrpParam := &MessageGrpParam{}
+	if err := c.Bind(msgGrpParam); err != nil {
+		return errors.WithStack(err)
+	}
+
+	tmp := uuid.UUID{}
+	if msgGrpParam.GroupID == tmp || msgGrpParam.Body == "" {
+		return c.Render(422, r.JSON("Group ID or body is missing"))
+	}
+
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return errors.WithStack(errors.New("no transaction found"))
+	}
+
+	grp := &models.Group{}
+
+	if err := tx.Find(grp, msgGrpParam.GroupID); err != nil {
+		return c.Render(400, r.JSON(err))
+	}
+
+	cUserID, _ := c.Value("currentUserID").(uuid.UUID)
+
+	sendBulkSMSInBG(msgGrpParam.GroupID, cUserID, msgGrpParam.Body)
+
+	return c.Render(200, r.JSON("Message queued"))
+}
+
+func sendBulkSMSInBG(grpID uuid.UUID, cUserID uuid.UUID, body string) {
+	w.Perform(worker.Job{
+		Queue:   "default",
+		Handler: "smsGrpContacts",
+		Args: worker.Args{
+			"cUserID": cUserID,
+			"groupID": grpID,
+			"body":    body,
+		},
+	})
 }
 
 // MessagesTwilCreate adds a Message to the DB. This function is mapped to the
