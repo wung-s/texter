@@ -320,3 +320,24 @@ func (as *ActionSuite) Test_ContactsSearch_With_OmitGroupID() {
 	as.NotContains(contacts.String(), "Peter")
 	as.Equal(200, res.Code)
 }
+
+// Delete
+
+func (as *ActionSuite) Test_ContactsDestroy() {
+	as.LoadFixture("admin user")
+	as.LoadFixture("one contact with group, one without group")
+	as.Login()
+
+	contactsCntBefore, _ := models.DB.Count(&models.Contact{})
+
+	contact := &models.Contact{}
+	as.NoError(models.DB.First(contact))
+	res := as.JSON("/contacts/" + contact.ID.String()).Delete()
+	as.Equal(200, res.Code)
+
+	contactsCntAfter, _ := models.DB.Count(&models.Contact{})
+	as.Equal(contactsCntAfter, contactsCntBefore-1)
+
+	cnt, _ := models.DB.Count(&models.ContactGroup{})
+	as.Equal(0, cnt)
+}

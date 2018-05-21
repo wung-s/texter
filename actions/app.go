@@ -69,6 +69,7 @@ func App() *buffalo.App {
 		app.GET("/contacts/search", ContactsSearch)
 		app.POST("/contacts", ContactsCreate)
 		app.PUT("/contacts/{contact_id}", ContactsUpdate)
+		app.DELETE("/contacts/{contact_id}", ContactsDestroy)
 		app.POST("/groups", GroupsCreate)
 		app.GET("/groups", GroupsList)
 		app.GET("/groups/{group_id}", GroupsShow)

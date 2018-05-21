@@ -197,9 +197,9 @@ func ContactsUpdate(c buffalo.Context) error {
 	return c.Render(200, r.Auto(c, contact))
 }
 
-// Destroy deletes a Contact from the DB. This function is mapped
+// ContactsDestroy deletes a Contact from the DB. This function is mapped
 // to the path DELETE /contacts/{contact_id}
-func (v ContactsResource) Destroy(c buffalo.Context) error {
+func ContactsDestroy(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
@@ -218,11 +218,7 @@ func (v ContactsResource) Destroy(c buffalo.Context) error {
 		return errors.WithStack(err)
 	}
 
-	// If there are no errors set a flash message
-	c.Flash().Add("success", "Contact was destroyed successfully")
-
-	// Redirect to the contacts index page
-	return c.Render(200, r.Auto(c, contact))
+	return c.Render(200, r.JSON(contact))
 }
 
 // ContactSearchResult defines the struct of the response
